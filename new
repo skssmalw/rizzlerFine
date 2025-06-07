@@ -210,8 +210,12 @@ for _, item in ipairs(backpack:GetChildren()) do
 end
 
 table.sort(items, function(a, b)
-	local aValue = tonumber((a:match("→ ([%d,]+)¢") or "0"):gsub(",", ""))
-	local bValue = tonumber((b:match("→ ([%d,]+)¢") or "0"):gsub(",", ""))
+	local aValueStr = a:match("→ ([%d%.]+)¢") or "0"
+	local bValueStr = b:match("→ ([%d%.]+)¢") or "0"
+
+	local aValue = tonumber(aValueStr:gsub(",", "")) or 0
+	local bValue = tonumber(bValueStr:gsub(",", "")) or 0
+
 	return aValue > bValue
 end)
 
